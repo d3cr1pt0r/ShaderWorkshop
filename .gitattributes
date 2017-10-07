@@ -1,0 +1,4 @@
+*.cs		eol=lf
+*.txt		eol=lf
+*.shader	eol=lf
+*.mat		eol=lf
