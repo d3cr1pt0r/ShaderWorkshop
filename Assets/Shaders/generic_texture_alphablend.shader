@@ -12,7 +12,9 @@
 
         _Stencil ("Stencil ID", Float) = 0
         [Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp ("Stencil Comparison", Int) = 8
-        [Enum(UnityEngine.Rendering.StencilOp)] _StencilOp ("Stencil Operation", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilOpPass ("Stencil Operation Pass", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilOpFail ("Stencil Operation Fail", Float) = 0
+        [Enum(UnityEngine.Rendering.StencilOp)] _StencilOpZFail ("Stencil Operation ZFail", Float) = 0
         _StencilWriteMask ("Stencil Write Mask", Float) = 255
         _StencilReadMask ("Stencil Read Mask", Float) = 255
 	}
@@ -24,7 +26,9 @@
         {
             Ref [_Stencil]
             Comp [_StencilComp]
-            Pass [_StencilOp] 
+            Pass [_StencilOpPass]
+            Fail [_StencilOpFail]
+            ZFail [_StencilOpZFail]
             ReadMask [_StencilReadMask]
             WriteMask [_StencilWriteMask]
         }
