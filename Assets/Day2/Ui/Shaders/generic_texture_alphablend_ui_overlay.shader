@@ -83,8 +83,8 @@
 			}
 			
 			fixed4 frag (fragmentInput i) : SV_Target {
-				fixed3 mainTex = tex2D(_MainTex, i.texcoord0).rgb;
-				fixed alphaTex = tex2D(_AlphaTex, i.texcoord0).a;
+				fixed3 mainTex = tex2D(_MainTex, i.texcoord1).rgb;
+				fixed alphaTex = tex2D(_AlphaTex, i.texcoord1).a;
 				fixed3 overlayTex = tex2D(_OverlayTex, i.texcoord1).rgb;
 
 				return fixed4(i.texcoord1.x, i.texcoord1.y, 0, 1);

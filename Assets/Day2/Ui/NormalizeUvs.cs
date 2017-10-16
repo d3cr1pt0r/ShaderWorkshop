@@ -11,16 +11,15 @@ public class NormalizeUvs : BaseMeshEffect {
         float maxY = rect.max.y;
         float minX = rect.min.x;
         float maxX = rect.max.x;
+
         int count = vh.currentVertCount;
         UIVertex uiVertex = new UIVertex();
 
         for (int i = 0; i < count; i++) {
             vh.PopulateUIVertex(ref uiVertex, i);
-            //uiVertex.uv1 = new Vector2(Mathf.InverseLerp(minX, maxX, uiVertex.position.x), Mathf.InverseLerp(minY, maxY, uiVertex.position.y));
-            uiVertex.uv1 = new Vector2(1.0f, 1.0f);
+            uiVertex.uv1 = new Vector2(Mathf.InverseLerp(minX, maxX, uiVertex.position.x), Mathf.InverseLerp(minY, maxY, uiVertex.position.y));
             vh.SetUIVertex(uiVertex, i);
         }
     }
-
 
 }
