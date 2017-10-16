@@ -1,8 +1,9 @@
-﻿Shader "ShaderWorkshop/generic_texture_alphablend"
+﻿Shader "ShaderWorkshop/generic_texture_alphablend_ui_overlay"
 {
 	Properties {
 		_MainTex ("Main Texture", 2D) = "white" {}
 		_AlphaTex ("Alpha Texture", 2D) = "white" {}
+		_OverlayTex ("Overlay Texture", 2D) = "black" {}
 
 		_TintColor ("Tint Color", Color) = (1,1,1,1)
 
@@ -49,18 +50,22 @@
 			struct vertexInput {
 				float4 vertex : POSITION;
 				float2 texcoord0 : TEXCOORD0;
+				float2 texcoord1 : TEXCOORD1;
 			};
 
 			struct fragmentInput {
 				float4 vertex : SV_POSITION;
 				float2 texcoord0 : TEXCOORD0;
+				float2 texcoord1 : TEXCOORD1;
 			};
 
 			sampler2D _MainTex;
 			sampler2D _AlphaTex;
+			sampler2D _OverlayTex;
 
 			float4 _MainTex_ST;
 			float4 _AlphaTex_ST;
+			float4 _OverlayTex_ST;
 
 			fixed4 _TintColor;
 			
@@ -72,6 +77,7 @@
 
 				// apply tiling and offset
 				o.texcoord0 = TRANSFORM_TEX(v.texcoord0, _MainTex);
+				o.texcoord1 = TRANSFORM_TEX(v.texcoord1, _OverlayTex);
 
 				return o;
 			}
@@ -79,8 +85,11 @@
 			fixed4 frag (fragmentInput i) : SV_Target {
 				fixed3 mainTex = tex2D(_MainTex, i.texcoord0).rgb;
 				fixed alphaTex = tex2D(_AlphaTex, i.texcoord0).a;
+				fixed3 overlayTex = tex2D(_OverlayTex, i.texcoord1).rgb;
 
-				return fixed4(mainTex.rgb * _TintColor.rgb, alphaTex * _TintColor.a);
+				return fixed4(i.texcoord1.x, i.texcoord1.y, 0, 1);
+
+				return fixed4(mainTex.rgb * _TintColor.rgb + overlayTex, alphaTex * _TintColor.a);
 			}
 			ENDCG
 		}
