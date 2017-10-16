@@ -17,9 +17,20 @@ public class NormalizeUvs : BaseMeshEffect {
 
         for (int i = 0; i < count; i++) {
             vh.PopulateUIVertex(ref uiVertex, i);
-            uiVertex.uv1 = new Vector2(Mathf.InverseLerp(minX, maxX, uiVertex.position.x), Mathf.InverseLerp(minY, maxY, uiVertex.position.y));
+
+            float x = Mathf.InverseLerp(minX, maxX, uiVertex.position.x);
+            float y = Mathf.InverseLerp(minY, maxY, uiVertex.position.y);
+
+            uiVertex.uv1 = new Vector2(x, y);
+            uiVertex.color = new Color32((byte)(x * 255), (byte)(y * 255), 0, 0);
+
             vh.SetUIVertex(uiVertex, i);
         }
+    }
+
+    public void Update() {
+        var graphic = GetComponent<Graphic>();
+        graphic.SetVerticesDirty();
     }
 
 }
