@@ -112,7 +112,9 @@
 				fixed mask =  tex2D(_MainTex, i.texcoord0.xy).b;
 				fixed3 mainTex = tex2D(_MainTex, i.texcoord0.xy + (displacementTex1.xy + displacementTex2.xy) * mask * pow(i.texcoord0.y + _GradientOffset, _GradientPower)).rgb;
 
-				//return pow(i.texcoord0.y + _GradientOffset, _GradientPower);
+				fixed sub = mainTex.r - mainTex.g;
+
+				return fixed4(sub * _Color1.rgb + mainTex.g * _Color2.rgb, 1.0);
 
 				return fixed4((_Color1.rgb * mainTex.r + _Color2.rgb * mainTex.g) * mask, 1.0);
 			}
