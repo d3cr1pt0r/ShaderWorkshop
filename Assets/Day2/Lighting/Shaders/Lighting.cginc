@@ -1,4 +1,6 @@
-﻿fixed3 DiffuseLighting(fixed3 normalWorld, fixed3 lightDirection) {
+﻿#define ConvertToGamma(_v_) pow(_v_, 0.454545);
+
+fixed3 DiffuseLighting(fixed3 normalWorld, fixed3 lightDirection) {
 	fixed diffuseOut = max(0.0, dot(normalWorld, lightDirection));
 
 	return fixed3(diffuseOut, diffuseOut, diffuseOut);

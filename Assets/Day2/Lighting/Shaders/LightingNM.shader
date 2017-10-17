@@ -134,7 +134,9 @@
 				fixed3 rimLight = RimLighting(viewDirection, lightDirection, i.worldNormal, _RimColor.rgb, _RimPower, _RimMultiplier, _RimPassThrough);
 
 				// calculate final light
-				half3 finalLight = _AmbientColor.rgb + diffuseLight + specularLight + rimLight;
+				half3 finalLight = ConvertToGamma(_AmbientColor.rgb + diffuseLight + specularLight + rimLight);
+
+//				return fixed4(finalLight, 1.0);
 
 				// main texture + light
 				return fixed4(mainTex * finalLight * cubeTex, 1.0);
