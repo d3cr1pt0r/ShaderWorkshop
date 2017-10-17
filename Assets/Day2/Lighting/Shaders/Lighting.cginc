@@ -33,3 +33,18 @@ float3 PointLighting(half3 vertexPos, half4 pointLightPosAndRadius, fixed3 point
 
 	return atten * intensity * pointLightColor.rgb * max(0.0, dot(normalWorld, lightDirection));
 }
+
+float3 GetTangentNormal(float4 normalTexture, float3 worldTangent, float3 worldNormal, float bumpDepth) {
+	float3 biTangent = cross(worldTangent, worldNormal);
+
+	float3 localCoords = float3(normalTexture.ag * 2.0 - 1.0, 0.0);
+	localCoords.z = bumpDepth;
+
+	float3x3 local2WorldTranspose = float3x3(
+		worldTangent,
+		biTangent,
+		worldNormal
+	);
+
+	return normalize(mul(localCoords, local2WorldTranspose));
+}
