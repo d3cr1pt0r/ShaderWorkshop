@@ -1,7 +1,8 @@
-﻿Shader "ShaderWorkshop/Lighting"
+﻿Shader "ShaderWorkshop/LightingNM"
 {
 	Properties {
 		_MainTex("Main Texture", 2D) = "white" {}
+		_NormalTex ("Normal Texture", 2D) = "black" {}
 		_AmbientColor ("Ambient Color", Color) = (1,1,1,1)
 		_DiffuseColor ("Diffuse Color", Color) = (1,1,1,1)
 		_SpecularColor ("Specular Color", Color) = (1,1,1,1)
@@ -14,6 +15,7 @@
 		_RimMultiplier("Rim Multiplier", Float) = 1
 		_RimPassThrough("Rim PassThrough", Float) = 1
 
+		_BumpDepth ("Bump Depth", Float) = 1
 		_IBLIntensity ("IBL Intensity", Float) = 1
 
 		[Enum(Off,0,On,1)] _Zwrite("Zwrite", Float) = 1
@@ -58,6 +60,7 @@
 			struct vertexInput {
 				float4 vertex : POSITION;
 				float3 normal : NORMAL;
+				float3 tangent : TANGENT;
 				float2 texcoord0 : TEXCOORD0;
 			};
 
@@ -66,10 +69,12 @@
 				float2 texcoord0 : TEXCOORD0;
 
 				float3 worldNormal : TEXCOORD1;
-				float3 worldPosition : TEXCOORD2;
+				float3 worldTangent: TEXCOORD2;
+				float3 worldPosition : TEXCOORD3;
 			};
 
 			sampler2D _MainTex;
+			sampler2D _NormalTex;
 			samplerCUBE _CubeMap;
 			float4 _MainTex_ST;
 
@@ -84,6 +89,7 @@
 			half _RimMultiplier;
 			half _RimPassThrough;
 
+			half _BumpDepth;
 			half _IBLIntensity;
 
 			fragmentInput vert (vertexInput v) {
@@ -94,6 +100,7 @@
 
 				o.texcoord0 = TRANSFORM_TEX(v.texcoord0, _MainTex);
 				o.worldNormal = normalize(mul((float3x3)(unity_ObjectToWorld), v.normal.xyz));
+				o.worldTangent = normalize(mul((float3x3)(unity_ObjectToWorld), v.tangent.xyz));
 				o.worldPosition = mul(unity_ObjectToWorld, float4(v.vertex.xyz, 1.0)).xyz;
 
 				return o;
@@ -101,13 +108,27 @@
 			
 			fixed4 frag (fragmentInput i) : SV_Target {
 				fixed3 mainTex = tex2D(_MainTex, i.texcoord0).rgb;
-				fixed3 cubeTex = texCUBElod(_CubeMap, half4(i.worldNormal, 8)) + _IBLIntensity;
+				float4 normalTex = tex2D(_NormalTex, i.texcoord0).rgba * 2.0 - 1.0;
 
 				float3 viewDirection = normalize(_WorldSpaceCameraPos.xyz - i.worldPosition.xyz);
 				float3 lightDirection = normalize(_WorldSpaceLightPos0.xyz);
+				float3 biTangent = cross(i.worldTangent, i.worldNormal);
 
-				fixed3 diffuse = DiffuseLighting(i.worldNormal, lightDirection) * _DiffuseColor.rgb;
-				fixed3 specular = SpecularLighting(_SpecularColor.rgb, lightDirection, i.worldNormal, viewDirection, _SpecularShininess, _SpecularMultiplier);
+				float3 localCoords = float3(normalTex.ag * 2.0 - 1.0, 0.0);
+				localCoords.z = _BumpDepth;
+				localCoords.z = 0.5 * dot(localCoords.xyz, localCoords.xyz);
+
+				float3x3 local2WorldTranspose = float3x3(
+					i.worldTangent,
+					biTangent,
+					i.worldNormal
+				);
+
+				float3 finalNormal = normalize(mul(localCoords, local2WorldTranspose));
+				fixed3 cubeTex = texCUBElod(_CubeMap, half4(finalNormal, 8)) + _IBLIntensity;
+
+				fixed3 diffuse = DiffuseLighting(finalNormal, lightDirection) * _DiffuseColor.rgb;
+				fixed3 specular = SpecularLighting(_SpecularColor.rgb, lightDirection, finalNormal, viewDirection, _SpecularShininess, _SpecularMultiplier);
 				fixed3 rim = RimLighting(viewDirection, lightDirection, i.worldNormal, _RimColor.rgb, _RimPower, _RimMultiplier, _RimPassThrough);
 				half3 finalLight = (_AmbientColor.rgb + diffuse + specular + rim);
 				
