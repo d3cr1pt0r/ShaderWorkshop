@@ -5,7 +5,7 @@
 		_AlphaTex ("Alpha Texture", 2D) = "white" {}
 		_MaskTex("Mask Texture", 2D) = "black" {}
 
-		_TintColor("Tint Color", Color) = (1,1,1,1)
+		_Color("Tint Color", Color) = (1,1,1,1)
 		_Power ("Power", Range(0, 1)) = 0
 
 		[Enum(Off,0,On,1)] _Zwrite("Zwrite", Float) = 1
@@ -69,13 +69,17 @@
 			float4 _MaskTex_ST;
 			fixed _Power;
 
-			fixed4 _TintColor;
+			fixed4 _Color;
 			
 			fragmentInput vert (vertexInput v) {
 				fragmentInput o;
 
 				// local vertex position multiplied by the MVP matrix
 				o.vertex = UnityObjectToClipPos(v.vertex);
+
+#ifdef UNITY_HALF_TEXEL_OFFSET
+				o.vertex.xy += (_ScreenParams.zw - 1.0) * float2(-1.0, 1.0);
+#endif
 
 				// apply tiling and offset
 				o.texcoord0 = TRANSFORM_TEX(v.texcoord0, _MainTex);
@@ -89,7 +93,7 @@
 				fixed alphaTex = tex2D(_AlphaTex, i.texcoord0).a;
 				fixed maskTex = tex2D(_MaskTex, i.texcoord1).a * _Power;
 
-				return fixed4(mainTex.rgb * _TintColor.rgb + maskTex, alphaTex * _TintColor.a);
+				return fixed4(mainTex.rgb * _Color.rgb + maskTex, alphaTex * _Color.a);
 			}
 			ENDCG
 		}
