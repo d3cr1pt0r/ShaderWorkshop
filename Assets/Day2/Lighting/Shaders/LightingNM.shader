@@ -4,6 +4,9 @@
 		_MainTex("Main Texture", 2D) = "white" {}
 		_NormalTex ("Normal Texture", 2D) = "black" {}
 		_CubeMap ("Cube Map", Cube) = "black" {}
+
+		_Color ("Tint Color", Color) = (1,1,1,1)
+
 		_AmbientColor ("Ambient Color", Color) = (1,1,1,1)
 		_DiffuseColor ("Diffuse Color", Color) = (1,1,1,1)
 		_SpecularColor ("Specular Color", Color) = (1,1,1,1)
@@ -81,6 +84,8 @@
 			samplerCUBE _CubeMap;
 			float4 _MainTex_ST;
 
+			fixed4 _Color;
+
 			fixed4 _AmbientColor;
 			fixed4 _DiffuseColor;
 			fixed4 _SpecularColor;
@@ -115,7 +120,7 @@
 			
 			fixed4 frag (fragmentInput i) : SV_Target {
 				// sample main texture
-				fixed3 mainTex = tex2D(_MainTex, i.texcoord0).rgb;
+				fixed3 mainTex = tex2D(_MainTex, i.texcoord0).rgb * _Color.rgb;
 				// sample normal map and convert it to (-1, 1) space
 				float4 normalTex = tex2D(_NormalTex, i.texcoord0).rgba * 2.0 - 1.0;
 
