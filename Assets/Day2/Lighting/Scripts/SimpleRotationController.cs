@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class SimpleRotationController : MonoBehaviour {
 
+    [SerializeField] public Vector3 axis = new Vector3(1, 0, 0);
     [SerializeField] public float speed = 1.0f;
 
     private Quaternion originalRotation;
@@ -22,7 +23,7 @@ public class SimpleRotationController : MonoBehaviour {
     }
 
     public void Update() {
-        transform.Rotate(0.0f, 0.0f, Time.deltaTime * speed);
+        transform.Rotate(axis * Time.deltaTime * speed);
     }
 	
 }
