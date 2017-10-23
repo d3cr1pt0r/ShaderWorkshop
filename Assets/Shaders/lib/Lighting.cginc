@@ -6,6 +6,11 @@ fixed3 DiffuseLighting(fixed3 normalWorld, fixed3 lightDirection) {
 	return fixed3(diffuseOut, diffuseOut, diffuseOut);
 }
 
+fixed3 RimLighting(fixed3 viewDirection, fixed3 normalWorld, fixed3 rimColor, float rimPower, float rimMultiplier) {
+	fixed rimAmount = 1.0 - max(0.0, dot(viewDirection, normalWorld));
+	return rimColor * pow(rimAmount, rimPower) * rimMultiplier;
+}
+
 fixed3 RimLighting(fixed3 viewDirection, fixed3 lightDirection, fixed3 normalWorld, fixed3 rimColor, float rimPower, float rimMultiplier, float rimPassThrough) {
 	fixed diffuseAmount = max(0.0, dot(normalWorld, lightDirection));
 	fixed rimAmount = 1.0 - max(0.0, dot(viewDirection, normalWorld));

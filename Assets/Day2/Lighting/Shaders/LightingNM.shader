@@ -61,7 +61,7 @@
 			#pragma fragment frag
 			
 			#include "UnityCG.cginc"
-			#include "Lighting.cginc"
+			#include "Assets/Shaders/lib/Lighting.cginc"
 
 			struct vertexInput {
 				float4 vertex : POSITION;
