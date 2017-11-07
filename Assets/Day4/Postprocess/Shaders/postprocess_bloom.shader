@@ -1,4 +1,4 @@
-﻿Shader "ShaderWorkshop/Postprocess/Grayscale"
+﻿Shader "ShaderWorkshop/Postprocess/Bloom"
 {
 	Properties {
 		_MainTex ("Main Texture", 2D) = "white" {}
