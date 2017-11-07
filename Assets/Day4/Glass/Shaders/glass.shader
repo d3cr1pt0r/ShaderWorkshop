@@ -74,18 +74,15 @@
 				// local vertex position multiplied by the MVP matrix
 				o.vertex = UnityObjectToClipPos(v.vertex);
 				o.texcoord0 = v.texcoord0;
-
-				float4 screen_space = o.vertex * 0.5;
-				screen_space.xy = float2(screen_space.x, screen_space.y * _ProjectionParams.x) + screen_space.w;
-				screen_space.zw = o.vertex.zw;
-
-				o.texcoord1 = screen_space;
+				o.texcoord1 = o.vertex;
 
 				return o;
 			}
 			
 			fixed4 frag (fragmentInput i) : SV_Target {
 				float2 screen_space_uv = i.texcoord1.xy / i.texcoord1.w;
+				screen_space_uv.xy = screen_space_uv.xy * 0.5 + 0.5;
+				screen_space_uv.y = 1.0 - screen_space_uv.y;
 
 				fixed3 mainTex = tex2D(_MainTex, i.texcoord0).rgb * _TintColor.rgb;
 				fixed alphaTex = tex2D(_AlphaTex, i.texcoord0).a * _TintColor.a;
